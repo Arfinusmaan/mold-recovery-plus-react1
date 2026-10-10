@@ -59,7 +59,7 @@ export const BeforeAfterSlider = ({
       {/* Interactive Slider Frame */}
       <div
         ref={containerRef}
-        className="relative w-full aspect-[16/10] sm:aspect-[16/9] select-none overflow-hidden cursor-ew-resize"
+        className="relative w-full aspect-[16/10] sm:aspect-[16/9] select-none overflow-hidden cursor-ew-resize touch-none"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
@@ -72,15 +72,18 @@ export const BeforeAfterSlider = ({
           className="absolute inset-0 w-full h-full object-cover"
         />
 
-        {/* After Tag */}
-        <div className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-600/60 backdrop-blur-md text-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-lg">
+        {/* After Tag (Fades out smoothly when slider moves past 75% towards Before) */}
+        <div 
+          className="absolute top-4 right-4 z-10 px-3 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-600/60 backdrop-blur-md text-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-lg pointer-events-none transition-opacity duration-150"
+          style={{ opacity: sliderPosition > 75 ? Math.max(0, (90 - sliderPosition) / 15) : 1 }}
+        >
           <Sparkles className="w-3.5 h-3.5" />
           <span>{afterLabel}</span>
         </div>
 
-        {/* Before Image (Clipped Overlay) */}
+        {/* Before Image (Clipped Overlay with z-20 so it covers After image and After badge) */}
         <div
-          className="absolute inset-0 overflow-hidden"
+          className="absolute inset-0 overflow-hidden z-20"
           style={{ width: `${sliderPosition}%` }}
         >
           <img
@@ -90,15 +93,18 @@ export const BeforeAfterSlider = ({
             style={{ width: containerRef.current ? `${containerRef.current.offsetWidth}px` : '100%' }}
           />
 
-          {/* Before Tag */}
-          <div className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-lg bg-rose-950/80 border border-rose-600/60 backdrop-blur-md text-rose-300 font-bold text-xs shadow-lg">
+          {/* Before Tag (Fades out smoothly when slider moves below 25% towards After) */}
+          <div 
+            className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-lg bg-rose-950/80 border border-rose-600/60 backdrop-blur-md text-rose-300 font-bold text-xs shadow-lg pointer-events-none transition-opacity duration-150"
+            style={{ opacity: sliderPosition < 25 ? Math.max(0, (sliderPosition - 10) / 15) : 1 }}
+          >
             <span>{beforeLabel}</span>
           </div>
         </div>
 
-        {/* Slider Divider Line */}
+        {/* Slider Divider Line with z-30 */}
         <div
-          className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl z-20 cursor-ew-resize"
+          className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl z-30 cursor-ew-resize"
           style={{ left: `${sliderPosition}%` }}
           onMouseDown={handleMouseDown}
         >
